@@ -28,7 +28,7 @@ c_1 = zeros(1, inspectedTime/timeStep); % concentration of segment 1 over time (
 c_2 = zeros(1, inspectedTime/timeStep); % concentration of segment 2 over time (kg/km^3)
 c_3 = zeros(1, inspectedTime/timeStep); % concentration of segment 3 over time (kg/km^3)
 
-c_2(1) = W/(segmentVolume(2)); % kg/km^3
+c_1(1) = W/(segmentVolume(2)); % kg/km^3
 
 % apply explicit FTBS method
 alpha = 1;
@@ -50,7 +50,7 @@ hold on;
 plot(x, c_2);
 plot(x, c_3);
 xlabel('Time (Day)');
-ylabel('Concentration (ppm)');
+ylabel('Concentration (kg/km^3)');
 legend('Segment 1', 'Segment 2', 'Segment 3');
 hold off;
 
