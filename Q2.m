@@ -28,7 +28,7 @@ c_1 = zeros(1, inspectedTime/timeStep); % concentration of segment 1 over time (
 c_2 = zeros(1, inspectedTime/timeStep); % concentration of segment 2 over time (kg/km^3)
 c_3 = zeros(1, inspectedTime/timeStep); % concentration of segment 3 over time (kg/km^3)
 
-c_1(1) = W/(segmentVolume(2)); % kg/km^3
+c_2(1) = W/(segmentVolume(2)); % kg/km^3
 
 % apply explicit FTBS method
 alpha = 1;
