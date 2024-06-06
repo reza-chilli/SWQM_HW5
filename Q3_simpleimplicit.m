@@ -33,34 +33,41 @@ plot(x, c_analytical(10, :));
 xlabel('Length (m)');
 ylabel('Concentration (ppm)');
 legend('t = 1h', 't = 2h', 't = 4h', 't = 6h', 't = 10h');
-hold off;
+
 
 % simple implicit method (applying centered difference with alpha = 0.5 and
 % beta = 0.5
 deltaT = 0.1; % 0.1 hour
-deltaX = 10; % 10m
-
-t = 0:deltaT:24; % 0.5h time step
+deltaX = 500; % 500m
+x = 0:deltaX:10000;
+t = 0:deltaT:24; % 0.1h time step
 
 c_implicit = zeros(length(t) + 1, length(x)); % gr/m^3 or ppm
-c_implicit(1, 1) = W/(area * 20);
+c_implicit(1, 1) = W/(area * deltaX); % setting initial conditions
 
-% E = E - (((velocity ^ 2) * deltaT)/2);
-for i = 2:size(c_implicit, 1)
-    coefficients = zeros(size(c_implicit, 2), size(c_implicit, 2));
-    for j = 1:size(c_implicit, 2)
-        coefficients(j, j) = 1 + ((2 * E * deltaT)/400) + (k * deltaT);
-        switch j
-            case 1
-                coefficients(j, j + 1) = ((velocity * deltaT)/(2 * 20)) - ((E * deltaT)/400);
-            case size(c_implicit, 2)
-                coefficients(j, j - 1) = -((velocity * deltaT)/(2 * 20)) - ((E * deltaT)/400);
-            otherwise
-                coefficients(j, j - 1) = -((velocity * deltaT)/(2 * 20)) - ((E * deltaT)/400);
-                coefficients(j, j + 1) = ((velocity * deltaT)/(2 * 20)) - ((E * deltaT)/400);
-        end
+E = E - (((velocity ^ 2) * deltaT)/2); % applying numerical dispersion
+coefficients = zeros(size(c_implicit, 2), size(c_implicit, 2));
+
+for j = 1:size(c_implicit, 2)
+    coefficients(j, j) = 1 + ((2 * E * deltaT)/(deltaX ^ 2)) + (k * deltaT);
+    switch j
+        case 1
+            coefficients(j, j + 1) = ((velocity * deltaT)/(2 * deltaX)) - ((E * deltaT)/(deltaX ^ 2));
+        case size(c_implicit, 2)
+            coefficients(j, j - 1) = -((velocity * deltaT)/(2 * deltaX)) - ((E * deltaT)/(deltaX ^ 2));
+        otherwise
+            coefficients(j, j - 1) = -((velocity * deltaT)/(2 * deltaX)) - ((E * deltaT)/(deltaX ^ 2));
+            coefficients(j, j + 1) = ((velocity * deltaT)/(2 * deltaX)) - ((E * deltaT)/(deltaX ^ 2));
     end
+end
+
+for i = 2:size(c_implicit, 1)
     c_implicit(i, :) = coefficients\flipud(rot90(c_implicit(i - 1, :)));
 end
-figure;
-plot(x, c_implicit(11, :));
+
+plot(x, c_implicit(11, :), '-x');
+plot(x, c_implicit(21, :), '-x');
+plot(x, c_implicit(41, :), '-x');
+plot(x, c_implicit(61, :), '-x');
+plot(x, c_implicit(101, :), '-x');
+hold off;
